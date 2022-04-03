@@ -7,7 +7,7 @@
 ## Notes for community
 
 - Recommended to report maps on the [issues site](https://issues.strafes.net/client/index.php#/folders/14/issues).
+- Find a fix by going to the folder with the map name and the bug title.
 
 ## Other
-### Why?
-Streamline and straightforward.
+- Why? > Streamline and straightforward.
