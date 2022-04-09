@@ -29,7 +29,7 @@ body:
     id: bug
     attributes:
       label: "Map Bug"
-      description: "What's wrong with this map?"
+      description: "What's wrong with this map? Provide screenshots/video if possible."
       placeholder: "ex.  Endzone can be touched through wall"
     validations:
       required: true
