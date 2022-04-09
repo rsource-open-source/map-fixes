@@ -1,0 +1,36 @@
+name: Map Bug Report
+description: File a map report
+title: "[Map Bug]: "
+labels: ["report"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for your time, please repost on the official issues site at [issues.strafes.net](https://issues.strafes.net/client/index.php#/folders/14/issues).
+  - type: input
+    id: map-name
+    attributes:
+      label: Map Details
+      description: "What's the map name? Maybe the id?"
+      placeholder: "ex.  Kitsune"
+    validations:
+      required: false
+  - type: dropdown
+    id: version
+    attributes:
+      label: Game
+      description: Which game is this map found in?
+      options:
+        - Bhop
+        - Surf
+    validations:
+      required: true
+  - type: textarea
+    id: bug
+    attributes:
+      label: "Map Bug"
+      description: "What's wrong with this map?"
+      placeholder: "ex.  Endzone can be touched through wall"
+    validations:
+      required: true
+      
