@@ -7,10 +7,5 @@ jobs:
   validate-structure:
     runs-on: windows-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-        
-#       - name: Run PowerShell Script
-#         run:  .github\scripts\
-      - run: exit 0
-#  validate-diff:
+      - uses: actions/checkout@v2
+      - run: ".github\\scripts\\Validate-Structure.ps1"
