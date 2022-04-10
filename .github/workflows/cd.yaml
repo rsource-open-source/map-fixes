@@ -2,15 +2,14 @@ name: CD
 
 on:
   workflow_dispatch:
-#     inputs:
-#       Map:
-#         description: 'Map Name, use map id by doing "ID: mapid"'
-#         required: true
-#         default: '-'
+    inputs:
+      Map:
+        description: 'Map Name, use map id by doing "ID: mapid"'
+        required: true
+        default: '-'
 
 jobs:
   request-map:
     runs-on: windows-latest
     steps:
-#       - run: "Write-Host ${{ github.event.inputs.Map }}"
-      - run: "hi"
+      - run: "Write-Host ${{ github.event.inputs.Map }}"
