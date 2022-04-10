@@ -12,5 +12,5 @@ jobs:
         
 #       - name: Run PowerShell Script
 #         run:  .github\scripts\
-        run: exit 0
+      - run: exit 0
 #  validate-diff:
