@@ -12,5 +12,4 @@ jobs:
   request-map:
     runs-on: windows-latest
     steps:
-      - name: print input
-        run: "Write-Host ${{ github.event.inputs.Map }}"
+      - run: "Write-Host ${{ github.event.inputs.Map }}"
