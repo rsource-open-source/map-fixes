@@ -3,9 +3,10 @@ name: CD
 on:
   workflow_dispatch:
     inputs:
-        Map:
-          description: 'Map Name, use map id by doing "ID: mapid"'     
-          required: true
+      Map:
+        description: 'Map Name, use map id by doing "ID: mapid"'
+        required: true
+        default: '-'
 
 jobs:
   request-map:
