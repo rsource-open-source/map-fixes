@@ -14,7 +14,7 @@ body:
       description: "What's the map name? Maybe the id?"
       placeholder: "ex.  Kitsune"
     validations:
-      required: false
+      required: true
   - type: dropdown
     id: version
     attributes:
