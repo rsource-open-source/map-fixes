@@ -12,3 +12,5 @@
 
 ## Other
 - Why? > Streamline and straightforward.
+- Why Git? > This takes advantage of Git to save space.
+- Why GitHub? > Some in the community have GitHub, I don't think anyone has GitLab. + I know how to use it better.
