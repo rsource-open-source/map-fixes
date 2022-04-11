@@ -1,4 +1,4 @@
-name: "Move Staging to Production"
+name: Move Staging to Production
 
 on:
   workflow_dispatch:
