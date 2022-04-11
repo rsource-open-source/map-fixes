@@ -1,0 +1,4 @@
+*.rbxmx     linguist-langauge=XML
+*.rbxlx     linguist-langauge=XML
+*.rbxm      binary
+*.rbxl      binary
