@@ -26,6 +26,8 @@ jobs:
       ROBLOSECURITY: ${{ secrets.ROBLOSECURITY }}
     steps:
       - uses: actions/checkout@v2
+      - run: rustup update
+      - run: cargo install tarmac
       - run: |
       .github\scripts\Request-Map-Model.ps1 -ROBLOSECURITY $ROBLOSECURITY ^
       -ApiKey $(If ($CUSTOM_API_KEY -eq "0") {$RSOURCE_API_KEY} Else {$CUSTOM_API_KEY}) ^
