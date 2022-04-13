@@ -4,12 +4,29 @@ on:
   workflow_dispatch:
     inputs:
       Map:
-        description: 'Map Name, use map id by doing "ID: mapid"'
+        description: 'Use map id by doing "ID: mapid"'
         required: true
-        default: '-'
+      Patch:
+        description: 'Apply a patch to the map. path/to/patch'
+        required: false
+        default: '0'
+      ApiKey:
+        description: 'Use your own StrafesNET API key'
+        required: false
+        default: '0'
 
 jobs:
   request-map:
     runs-on: windows-latest
+    env:
+      MAP: ${{ github.event.inputs.Map }}
+      PATCH: ${{ github.event.inputs.Patch }}
+      CUSTOM_API_KEY: ${{ github.event.inputs.ApiKey }}
+      RSOURCE_API_KEY: ${{ secrets.STRAFESNET_API_KEY }}
+      ROBLOSECURITY: ${{ secrets.ROBLOSECURITY }}
     steps:
-      - run: "Write-Host ${{ github.event.inputs.Map }}"
+      - uses: actions/checkout@v2
+      - run: |
+      .github\scripts\Request-Map-Model.ps1 -ROBLOSECURITY $ROBLOSECURITY ^
+      -ApiKey $(If ($CUSTOM_API_KEY -eq "0") {$RSOURCE_API_KEY} Else {$CUSTOM_API_KEY}) ^
+      -Map $MAP $(If ($PATCH -ne "0") {-Patch $PATCH})
