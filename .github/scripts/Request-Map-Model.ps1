@@ -1,4 +1,5 @@
 Function Request-Map-Model {
+  [CmdletBinding()]
   Param(
     [Parameter(Mandatory = $true , Position = 0)] [string]$ROBLOSECURITY,
     [Parameter(Mandatory = $true , Position = 1)] [string]$APIKEY,
