@@ -31,4 +31,4 @@ jobs:
       - run: |
           .github\scripts\Request-Map-Model.ps1 -ROBLOSECURITY $ROBLOSECURITY ^
           -ApiKey $(If ($CUSTOM_API_KEY -eq "0") {$RSOURCE_API_KEY} Else {$CUSTOM_API_KEY}) ^
-          -Map $MAP $(If ($PATCH -ne "0") {-Patch $PATCH})
+          -Map $MAP $(If ($PATCH -ne "0") {-Patch $PATCH}) -Verbose
