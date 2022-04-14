@@ -6,56 +6,29 @@ Function Request-Map-Model {
     [Parameter(Mandatory = $false, Position = 3)] [string]$MAP,
     [Parameter(Mandatory = $false, Position = 4)] [string]$PATCH
   )
-  process {
-    # Validation Process
-    ForEach ($thing in $ROBLOSECURITY, $APIKEY, $MAP, $PATCH) {
-      If ([string]::IsNullOrEmpty($thing)) { exit 1; } }
+  # Validation Process
+  ForEach ($thing in $ROBLOSECURITY, $APIKEY, $MAP, $PATCH) {
+    If ([string]::IsNullOrEmpty($thing)) { exit 1; } }
 
-    $FoundMap = ""
-    If ($MAP -imatch "ID: ?[0-9]+") {
-     
-      $res = Invoke-RestMethod -Method Get -Uri
-      "https://api.strafes.net/v1/map/${FoundMap}?api-key=${APIKEY}"
-      
-      # Error
-      If ($res["message"] -ne $null) {
-        If ($res["message"] -match
-        "(No API key found in request|Invalid authentication credentials)") {
-          Write-Error $res["message"] -TargetObject $res -Category AuthenticationError
-        }
+  If ($MAP -imatch "ID: ?[0-9]+") {
+    Write-Verbose "Identified map input is a map id"
+    $MAP = [regex]::split($MAP, ": ?")
+
+    Write-Verbose "Invoking the StrafesNET API: /v1/map/$Map"
+    $res = Invoke-RestMethod -Method Get -Uri "https://api.strafes.net/v1/map/${FoundMap}?api-key=$APIKEY"
+
+    Write-Verbose "Checking for errors returned from the API"
+    If ($res.GetType().Name -eq "PSCustomObject" -and $res["message"] -ne $null) {
+      If ($res["message"] -match
+      "(No API key found in request|Invalid authentication credentials)") {
+        Write-Error $res["message"] -TargetObject $res -Category AuthenticationError
       }
-
-      # On this resource, the API would only return an array if it is an error      
-      If ($res.GetType().ToString().Name -ne "Object[]") {
-        [System.Management.Automation.ErrorCategory]$Category = ^
-        [System.Management.Automation.ErrorCategory]::NotSpecified
-        
-        $res | ForEach {
-          $msg = $_.message
-          
-          # Auth Error
-          If ($msg -eq "unable to auth") {
-            $Category = ^
-            [System.Management.Automation.ErrorCategory]::AuthenticationError }
-
-          # Rate Limited
-          If ($msg -eq "api limit exceeded") {
-            $Category = [System.Management.Automation.ErrorCategory]::QuotaExceeded }
-        
-        }
-
-        Write-Error "API Error" -TargetObject $res -Category 
-        exit 1
-      } # An error occured.
-
-
-    } else {}
-
-    # First, look for the map model in the strafesnet account
-    # OR grab it from the api via id and get the model
-
-    # then download the model and patch with said diff
-    # then upload it using tarmac
-
+    } else { Write-Verbose "✔ No errors (i think)" }
   }
+
+  # First, look for the map model in the strafesnet account
+  # OR grab it from the api via id and get the model
+
+  # then download the model and patch with said diff
+  # then upload it
 }
