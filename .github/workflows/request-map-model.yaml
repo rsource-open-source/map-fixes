@@ -4,22 +4,33 @@ on:
   workflow_dispatch:
     inputs:
       Map:
-        description: 'Use map id by doing "ID: mapid"'
+        description: "Map ID or Name"
         required: true
+        type: text
+      MapInputType:
+        description: "ID? Display Name? Model Name?"
+        required: true
+        type: choice
+        options:
+          - ID (0123456789)
+          - Model Name (bhop_mapname)
+          - 'Display Name ("Map Name")'
+        default: ID
       Patch:
         description: "Apply a patch to the map. path/to/patch"
         required: false
-        default: "0"
+        default: ""
       ApiKey:
         description: "Use your own StrafesNET API key"
         required: false
-        default: "0"
+        default: ""
 
 jobs:
   request-map:
     runs-on: windows-latest
     env:
       MAP: ${{ github.event.inputs.Map }}
+      TYPE: ${{ github.event.inputs.MapInputType }}
       PATCH: ${{ github.event.inputs.Patch }}
       CUSTOM_API_KEY: ${{ github.event.inputs.ApiKey }}
       RSOURCE_API_KEY: ${{ secrets.STRAFESNET_API_KEY }}
@@ -31,4 +42,4 @@ jobs:
       - run: |
           .github\scripts\Request-MapModel.ps1 -ROBLOSECURITY $ROBLOSECURITY ^
           -ApiKey $(If ($CUSTOM_API_KEY -eq "0") {$RSOURCE_API_KEY} Else {$CUSTOM_API_KEY}) ^
-          -Map $MAP $(If ($PATCH -ne "0") {-Patch $PATCH}) -Verbose
+          -Map $MAP $(If ($PATCH -ne "0") {-Patch $PATCH}) -MapInputType $TYPE --Verbose
