@@ -1,4 +1,4 @@
-Function Request-Map-Model {
+Function Request-MapModel {
   [CmdletBinding()]
   Param(
     [Parameter(Mandatory = $true , Position = 0)] [string]$ROBLOSECURITY,
@@ -8,7 +8,8 @@ Function Request-Map-Model {
   )
   # Validation Process
   ForEach ($thing in $ROBLOSECURITY, $APIKEY, $MAP, $PATCH) {
-    If ([string]::IsNullOrEmpty($thing)) { exit 1; } }
+    If ([string]::IsNullOrEmpty($thing)) { exit 1; } 
+  }
 
   If ($MAP -imatch "ID: ?[0-9]+") {
     Write-Verbose "Identified map input is a map id"
@@ -18,12 +19,13 @@ Function Request-Map-Model {
     $res = Invoke-RestMethod -Method Get -Uri "https://api.strafes.net/v1/map/${FoundMap}?api-key=$APIKEY"
 
     Write-Verbose "Checking for errors returned from the API"
-    If ($res.GetType().Name -eq "PSCustomObject" -and $res["message"] -ne $null) {
+    If ($res.GetType().Name -eq "PSCustomObject" -and $null -ne $res["message"]) {
       If ($res["message"] -match
-      "(No API key found in request|Invalid authentication credentials)") {
+        "(No API key found in request|Invalid authentication credentials)") {
         Write-Error $res["message"] -TargetObject $res -Category AuthenticationError
       }
-    } else { Write-Verbose "✔ No errors (i think)" }
+    }
+    Else { Write-Verbose "✔ No errors (i think)" }
   }
 
   # First, look for the map model in the strafesnet account

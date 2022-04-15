@@ -7,13 +7,13 @@ on:
         description: 'Use map id by doing "ID: mapid"'
         required: true
       Patch:
-        description: 'Apply a patch to the map. path/to/patch'
+        description: "Apply a patch to the map. path/to/patch"
         required: false
-        default: '0'
+        default: "0"
       ApiKey:
-        description: 'Use your own StrafesNET API key'
+        description: "Use your own StrafesNET API key"
         required: false
-        default: '0'
+        default: "0"
 
 jobs:
   request-map:
@@ -29,6 +29,6 @@ jobs:
       - run: rustup update
       - run: cargo install tarmac
       - run: |
-          .github\scripts\Request-Map-Model.ps1 -ROBLOSECURITY $ROBLOSECURITY ^
+          .github\scripts\Request-MapModel.ps1 -ROBLOSECURITY $ROBLOSECURITY ^
           -ApiKey $(If ($CUSTOM_API_KEY -eq "0") {$RSOURCE_API_KEY} Else {$CUSTOM_API_KEY}) ^
           -Map $MAP $(If ($PATCH -ne "0") {-Patch $PATCH}) -Verbose
