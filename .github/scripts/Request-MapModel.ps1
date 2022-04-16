@@ -1,22 +1,18 @@
 Function Request-MapModel {
   [CmdletBinding()]
   Param(
-    [Parameter(Mandatory = $true , Position = 0)] [string]$ROBLOSECURITY,
-    [Parameter(Mandatory = $true , Position = 1)] [string]$APIKEY,
-    [Parameter(Mandatory = $false, Position = 3)] [string]$MAP,
-    [Parameter(Mandatory = $false, Position = 4)] [string]$PATCH
+    [Parameter(Mandatory = $true, Position = 0)] [string]$MAP,
+    [Parameter(Mandatory = $false, Position = 1)] [string]$PATCH
   )
-  # Validation Process
-  ForEach ($thing in $ROBLOSECURITY, $APIKEY, $MAP, $PATCH) {
-    If ([string]::IsNullOrEmpty($thing)) { exit 1; } 
-  }
 
-  If ($MAP -imatch "ID: ?[0-9]+") {
-    Write-Verbose "Identified map input is a map id"
+  Write-Verbose "Checking map input type"
+
+  If ($MAP -imatch "[0-9]+") {
+    Write-Verbose "Identified map input is ID"
     $MAP = [regex]::split($MAP, ": ?")
 
-    Write-Verbose "Invoking the StrafesNET API: /v1/map/$Map"
-    $res = Invoke-RestMethod -Method Get -Uri "https://api.strafes.net/v1/map/${FoundMap}?api-key=$APIKEY"
+    Write-Verbose "Invoking the Asset Delivery Roblox API: /v1/assetId/$Map"
+    $res = Invoke-RestMethod -Uri "https://assetdelivery.roblox.com/v1/assetId/${FoundMap}" -Method "Get" -Headers "Accept: application/json"
 
     Write-Verbose "Checking for errors returned from the API"
     If ($res.GetType().Name -eq "PSCustomObject" -and $null -ne $res["message"]) {
