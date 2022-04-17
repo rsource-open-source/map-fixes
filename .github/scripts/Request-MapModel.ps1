@@ -38,14 +38,9 @@ Write-Verbose "Invoking the Asset Delivery Roblox API: /v1/assetId/$MAP"
 Write-Verbose "Reading the API response"
 # Location is not found, assume error
 If ([string]::IsNullOrEmpty($res.location)) {
-  # If errors is present, show
-  If ($null -eq $res.errors) {
-    Throw "Unknown API Error = $res"
-  }
-  # If not (???) show entire response
-  Else {
-    Throw "$([string]::IsNullOrEmpty($DisplayError) ? "Unknown API Error.^r^n$(ConvertTo-Json $res)" : $DisplayError)"
-  }
+  Throw ($null -eq $res.errors) ? "Unknown API Error = $res" :
+  ([string]::IsNullOrEmpty($DisplayError) ?
+  "Unknown API Error.^r^n$(ConvertTo-Json $res)" : $DisplayError)
 }
 Else {
   Write-Verbose "Resource found"
