@@ -12,6 +12,6 @@ Foreach ($f in $list) {
     Get-ChildItem -Path $f -Exclude keepalive |
     ForEach-Object {
         If ($_.Mode -eq "d----") { Exit 1 }
-        If ($_.Extension -ne ".diff") { Exit 1 }
+        If ($_.Extension -notmatch "\.(diff|patch)") { Exit 1 }
     }
 }
