@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       Map:
-        description: "Map ID/Model Name/Display Name"
+        description: "Map ID"
         required: true
         type: text
       Patch:
@@ -18,7 +18,8 @@ jobs:
     env:
       MAP: ${{ github.event.inputs.Map }}
       PATCH: ${{ github.event.inputs.Patch }}
+      RS: ${{ secrets.RSOURCE_ROBLOX_BOT_ROBLOSECURITY }}
     steps:
       - uses: actions/checkout@v2
       - run: |
-          .github\scripts\Request-MapModel.ps1 -Map $MAP $(If ($null -ne $PATCH) {"-Patch $PATCH"}) --Verbose
+          .github\scripts\Request-MapModel.ps1 -Map $MAP $(If ($null -ne $PATCH) {"-Patch $PATCH"}) -RS $RS --Verbose
