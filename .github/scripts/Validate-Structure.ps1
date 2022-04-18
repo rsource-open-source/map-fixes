@@ -1,17 +1,13 @@
-If (!(Test-Path -Path staging         -PathType Container)) { Exit 1 }
-If (!(Test-Path -Path production      -PathType Container)) { Exit 1 }
-If (!(Test-Path -Path .github         -PathType Container)) { Exit 1 }
-If (!(Test-Path -Path staging/keepalive    -PathType Leaf)) { Exit 1 }
-If (!(Test-Path -Path .gitattributes       -PathType Leaf)) { Exit 1 }
-If (!(Test-Path -Path .gitignore           -PathType Leaf)) { Exit 1 }
-If (!(Test-Path -Path production/keepalive -PathType Leaf)) { Exit 1 }
+$ExpectedFolders = 'staging', 'production', '.github'
+$ExpectedFiles = '.gitignore', '.gitattributes', 'staging\keepalive', 'production\keepalive'
+$ExpectedFileRegex = "(.+\.(patch|diff)|keepalive)"
 
-$list = 'staging', 'production'
+Get-ChildItem -Attributes "Directory" | ForEach-Object {
+  If (!($_ -in $ExpectedFolders)) { Throw "Unexpected folder: $_, expected folders: $ExpectedFolders"} }
 
-Foreach ($f in $list) {
-    Get-ChildItem -Path $f -Exclude keepalive |
-    ForEach-Object {
-        If ($_.Mode -eq "d----") { Exit 1 }
-        If ($_.Extension -notmatch "\.(diff|patch)") { Exit 1 }
-    }
+Get-ChildItem -Attributes "Archive" | ForEach-Object {
+  If (!($_ -in $ExpectedFiles)) { Throw "Unexpected file: $_, expected files: $ExpectedFolders"} }
+
+Get-ChildItem $ExpectedFolders[0,1] -Name | ForEach-Object {
+    If ($_ -notmatch $ExpectedFileRegex) { Throw "Unexpected file: $_, expected file RegEx: $ExpectedFileRegex" }
 }
