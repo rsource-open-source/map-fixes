@@ -123,10 +123,7 @@ Write-Verbose "Next step: Patching the asset"
 # Write-Verbose "Ok, haven't done this, continuing"
 
 Write-Verbose "Validating patch path"
-If ((Test-Path $PATCH -PathType Leaf) -and ($PATCH.EndsWith(".patch"))) {
-  Write-Verbose "Patch path is valid"
-}
-Else {
+If (!((Test-Path $PATCH -PathType Leaf) -and ($PATCH -match ".+\.(patch|diff)"))) {
   Throw "Patch path is invalid"
 }
 
