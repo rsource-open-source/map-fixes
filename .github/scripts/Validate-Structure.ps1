@@ -2,10 +2,10 @@ $ExpectedFolders = 'staging', 'production', '.github'
 $ExpectedFiles = '.gitignore', '.gitattributes', 'staging\keepalive', 'production\keepalive'
 $ExpectedFileRegex = "(.+\.(patch|diff)|keepalive)"
 
-Get-ChildItem -Attributes "Directory" | ForEach-Object {
+Get-ChildItem -Attributes "Directory" -Name | ForEach-Object {
   If (!($_ -in $ExpectedFolders)) { Throw "Unexpected folder: $_, expected folders: $ExpectedFolders"} }
 
-Get-ChildItem -Attributes "Archive" | ForEach-Object {
+Get-ChildItem -Attributes "Archive" -Name | ForEach-Object {
   If (!($_ -in $ExpectedFiles)) { Throw "Unexpected file: $_, expected files: $ExpectedFolders"} }
 
 Get-ChildItem $ExpectedFolders[0,1] -Name | ForEach-Object {
