@@ -1,1 +1,1 @@
-Get-ChildItem "staging" -Filter "*.diff" | Move-Item -Destination "production"
+Get-ChildItem "staging" | Where-Object { $_.Name -match ".+\.(patch|diff)" } | Move-Item -Destination "production"
