@@ -70,13 +70,7 @@ Write-Verbose "Invoking the Marketplace Product Info API: /marketplace/productin
 
 Write-Verbose "Reading the API response"
 
-# Errors
-If ($null -ne $PIRes.code) {
-  Throw "API returned an error: $($PIRes.message) ($($PIRes.code))"
-}
-ElseIf ($null -eq $PIRes.errors) {
-  Throw "API returned (an) error(s): $($PIRes.errors | ForEach-Object { "$($_.message) ($($_.code)) " })"
-}
+Throw "API returned following error(s): $($null -ne $PIRes.code ? "$($PIRes.message) ($($PIRes.code))" : "$($PIRes.errors | ForEach-Object { "$($_.message) ($($_.code)) " })")"
 
 # Asset Details
 If ($PIRes.AssetTypeId -ne 10) {
