@@ -15,6 +15,13 @@ Param(
 
 If ($PSVersionTable.PSVersion.Major -ne 7) { Throw "This script requires PowerShell 7.0 or later... not really though." }
 
+If ($PATCH) {
+  Write-Verbose "Validating patch path"
+  If (!((Test-Path $PATCH -PathType Leaf) -and ($PATCH -match ".+\.(patch|diff)"))) {
+    Throw "Patch path is invalid"
+  }
+}
+
 Write-Verbose "Setting up stuff for API interactions."
 
 # $BhopModelsID = 357810123
@@ -125,11 +132,6 @@ Write-Verbose "Next step: Patching the asset"
 # }
 
 # Write-Verbose "Ok, haven't done this, continuing"
-
-Write-Verbose "Validating patch path"
-If (!((Test-Path $PATCH -PathType Leaf) -and ($PATCH -match ".+\.(patch|diff)"))) {
-  Throw "Patch path is invalid"
-}
 
 Write-Verbose "Preparing tmp folder"
 mkdir tmp
