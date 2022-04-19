@@ -13,15 +13,14 @@ Param(
   [string] $RS
 )
 
-Write-Verbose "Checking PowerShell version"
-If ($PSVersionTable.PSVersion.Major -ne 7) { Throw "This script requires PowerShell 7.0 or later." }
+If ($PSVersionTable.PSVersion.Major -ne 7) { Throw "This script requires PowerShell 7.0 or later... not really though." }
 
 Write-Verbose "Setting up stuff for API interactions."
 
 # $BhopModelsID = 357810123
 # $SurfModelsID = 357809318
 
-# Is nullable
+# Is nullable, across all APIs
 class RobloxError {
   [int]    $code
   [string] $message
@@ -35,7 +34,7 @@ class ADRoblox {
   [RobloxError[]] $errors
 }
 
-class PIRoblox {
+class MPIRoblox {
   # Errors
   [int]           $code   # 500
   [string]        $message # "InternalServerError"
@@ -44,6 +43,7 @@ class PIRoblox {
   [string]        $Name
   # https://developer.roblox.com/en-us/api-reference/enum/AssetType
   [int]           $AssetTypeId
+  [bool]          $IsForSale
 }
 
 # Inventory Roblox API response
@@ -64,19 +64,29 @@ class IRobloxData {
   [string]      $created # This format: 2017-12-07T01:42:06.237Z
 }
 
-Write-Verbose "Verifying asset type"
+Write-Verbose "Verifying asset"
 Write-Verbose "Invoking the Marketplace Product Info API: /marketplace/productinfo?assetId=$MAP"
-[PIRoblox] $PIRes = Invoke-RestMethod -Uri "https://api.roblox.com/marketplace/productinfo?assetId=$MAP" -Method "Get" -ContentType "application/json"
+[MPIRoblox] $MPIRes = Invoke-RestMethod -Uri "https://api.roblox.com/marketplace/productinfo?assetId=$MAP" -Method "Get" -ContentType "application/json"
 
 Write-Verbose "Reading the API response"
 
-Throw "API returned following error(s): $($null -ne $PIRes.code ? "$($PIRes.message) ($($PIRes.code))" : "$($PIRes.errors | ForEach-Object { "$($_.message) ($($_.code)) " })")"
+# Errors
+If (($null -ne $MPIRes.code) -or ($null -eq $MPIRes.errors)) {
+  Throw "API returned following error(s): $($null -ne $MPIRes.code ?
+  "$($MPIRes.message) ($($MPIRes.code))" :
+  "$($MPIRes.errors | ForEach-Object { "$($_.message) ($($_.code)) " })")"
+}
 
 # Asset Details
-If ($PIRes.AssetTypeId -ne 10) {
+If ($MPIRes.IsForSale -eq $false) {
+  Throw "Asset is not for sale; is copylocked."
+}
+
+If ($MPIRes.AssetTypeId -ne 10) {
   Throw "Asset type is not a Roblox Model."
 }
 
+# Retrieving the asset
 Write-Verbose "Invoking the Asset Delivery Roblox API: /v1/assetId/$MAP"
 [ADRoblox] $ADres = Invoke-RestMethod -Uri "https://assetdelivery.roblox.com/v1/assetId/$MAP" -Method "Get" -ContentType "application/json"
 
@@ -84,18 +94,12 @@ Write-Verbose "Reading the API response"
 
 # Location is not found, assume error
 If ([string]::IsNullOrEmpty($ADres.location)) {
-  Throw ($null -eq $ADres.errors) ? "Unknown API Error = $ADres" :
-  ([string]::IsNullOrEmpty($DisplayError) ?
-  "Unknown API Error.^r^n$(ConvertTo-Json $ADres)" : $DisplayError)
+  Throw ($null -eq $ADres.errors) ? "API returned following error(s): $ADres" :([string]::IsNullOrEmpty($DisplayError) ? "Unknown API Error.^r^n$(ConvertTo-Json $ADres)" : $DisplayError)
 }
 Else {
   Write-Verbose "Resource found"
   If ($null -eq $PATCH) {
-    # BTW, you can find the exact model url by combining the <Creator.Id> and <Name> objects from
-    # api.roblox.com/marketplace/productinfo?assetId=INSERT_ASSET_ID
-    # And format appropriate objects as:
-    # https://www.roblox.com/library/INSERT_CREATOR_ID/INSERT_ASSET_NAME
-    Write-Host "Download the asset at $ADres.location" -ForegroundColor "Green"
+    Write-Host "Download the raw asset at $($ADres.location) or get the asset at https://www.roblox.com/library/$MAP/$($MPIRes.Name -replace "(_| )", "-")" -ForegroundColor "Green"
     Exit 0
   }
 }
@@ -149,11 +153,11 @@ Write-Verbose "Invoking rbx-util with arguments: convert model.rbxm model.rbxmx"
 Write-Verbose "Applying patch to model.rbxmx"
 git.exe "apply $PATCH"
 
-Write-Verbose "Transforming XML to binary format for upload"
+Write-Verbose "Transforming XML to binary format for upload"A
 .\.github\bin\rbx-util.exe "convert model.rbxmx model.rbxm"
 
 Write-Verbose "Uploading to Asset Delivery"
-$urlparams = "json=1&assetid=0&type=Model&genreTypeId=1&name=$($PIRes.Name + "_")&ispublic=true&allowComments=false"
+$urlparams = "json=1&assetid=0&type=Model&genreTypeId=1&name=$($MPIRes.Name + "_")&ispublic=true&allowComments=false"
 Invoke-RestMethod -Uri ("https://data.roblox.com/Data/Upload.ashx?$urlparams" + $urlparams) -Method "Post" -ContentType "application/xml" -Headers @{
   "X-CSRF-TOKEN" = $RS
 } -Body (Get-Content "model.rbxmx")
