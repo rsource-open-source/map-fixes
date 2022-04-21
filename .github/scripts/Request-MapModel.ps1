@@ -15,13 +15,6 @@ Param(
 
 If ($PSVersionTable.PSVersion.Major -ne 7) { Throw "This script requires PowerShell 7.0 or later... not really though." }
 
-If ($PATCH) {
-  Write-Verbose "Validating patch path"
-  If (!((Test-Path $PATCH -PathType Leaf) -and ($PATCH -match ".+\.(patch|diff)"))) {
-    Throw "Patch path is invalid"
-  }
-}
-
 Write-Verbose "Setting up stuff for API interactions."
 
 # $BhopModelsID = 357810123
@@ -133,6 +126,11 @@ Write-Verbose "Next step: Patching the asset"
 
 # Write-Verbose "Ok, haven't done this, continuing"
 
+Write-Verbose "Validating patch path"
+If (!((Test-Path $PATCH -PathType Leaf) -and ($PATCH -match ".+\.(patch|diff)"))) {
+  Throw "Patch path is invalid"
+}
+
 Write-Verbose "Preparing tmp folder"
 mkdir tmp
 Set-Location "tmp"
@@ -160,7 +158,7 @@ Write-Verbose "Transforming XML to binary format for upload"A
 
 Write-Verbose "Uploading to Asset Delivery"
 $urlparams = "json=1&assetid=0&type=Model&genreTypeId=1&name=$($MPIRes.Name + "_")&ispublic=true&allowComments=false"
-Invoke-RestMethod -Uri ("https://data.roblox.com/Data/Upload.ashx?$urlparams" + $urlparams) -Method "Post" -ContentType "application/xml" -Headers @{
+Invoke-RestMethod -Uri ("https://data.roblox.com/Data/Upload.ashx?$urlparams") -Method "Post" -ContentType "application/xml" -Headers @{
   "X-CSRF-TOKEN" = $RS
 } -Body (Get-Content "model.rbxmx")
 
