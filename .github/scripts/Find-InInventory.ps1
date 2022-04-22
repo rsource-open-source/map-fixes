@@ -42,7 +42,7 @@ class ADRoblox {
   [string] $location
 }
 
-[IRoblox] $res = Invoke-RestMethod -Uri "https://inventory.roblox.com/v2/users/$($GAME -eq "bhop" ? $BhopModelsID : $SurfModelsID)/inventory?assetTypes=Model&limit=100&sortOrder=Asc" -FollowRelLink -MaximumFollowRelLink 2 -ContentType "application/json"
+[IRoblox] $res = Invoke-RestMethod -Uri "https://inventory.roblox.com/v2/users/$($GAME -eq "bhop" ? $BhopModelsID : $SurfModelsID)/inventory?assetTypes=Model&limit=100&sortOrder=Asc" -ContentType "application/json"
 
 If ($null -ne $res.errors) {
   Throw $res.errors | ConvertTo-Json
@@ -58,4 +58,4 @@ If (($DOWNLOADSTR -eq $true) -and ($null -ne $j)) {
   [ADRoblox] $DS = Invoke-RestMethod -Uri "https://assetdelivery.roblox.com/v1/assetId/$ID"  -Method "Get" -ContentType "application/json"
 }
 
-"Found ${ID}: $Map, download directly at ${DS.location} or get it at https://www.roblox.com/"
+# "Found ${ID}: $Map, download directly at ${DS.location} or get it at https://www.roblox.com/"
