@@ -32,7 +32,7 @@ class IRoblox {
 }
 
 class IRobloxData {
-  [int64]  $assetId
+  [string] $assetId # Sometimes can be ######## (retard roblox)
   [string] $name # Ends with .rbxmx sometimes
   [string] $assetType # "Model"
   [string] $created # This format: 2017-12-07T01:42:06.237Z
@@ -48,10 +48,10 @@ If ($null -ne $res.errors) {
   Throw $res.errors | ConvertTo-Json
 }
 
-$Map = $res.data | ForEach-Object {
-  If ($_.assetId -eq $ID) {
-    return $_.name 
-  }
+$Map = $res.data | Select-Object -Property assetId | Where-Object { $_.ToString() -eq $ID }
+
+If (!$Map) {
+  Throw "No map found with ID: $ID" # on first page anyways
 }
 
 If (($DOWNLOADSTR -eq $true) -and ($null -ne $j)) {
