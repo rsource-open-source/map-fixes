@@ -1,4 +1,13 @@
 # 🗺 map fixes
+
+---
+
+## This project is archived.
+
+Please see the officially maintained repository: [krakow10/foundation-update](https://github.com/krakow10/foundation-update)
+
+---
+
 ## Notes for community maintainers
 
 - DM insyri if you wish to be invited to directly update this list / wiki.
